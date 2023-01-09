@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < records; i++) {
       event.id = i;
       toLog = "$toLog,${event.toMap()}";
-      File logFile = File("${directory.path}/ $i.json");
+      File logFile = File("${directory.path}/ $i.txt");
       await logFile.writeAsString(toLog, mode: FileMode.write);
       // setState(() {
       _counter++;
