@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Event {
   late int id;
   late double timestamp;
@@ -69,6 +71,30 @@ class Event {
     map["synced_at"] = syncedAt;
     map["weather"] = weather;
     map["health"] = health;
+    return Map.fromEntries(map.entries.where((e) => e.value != null));
+  }
+
+  Map<String, dynamic> toDb() {
+    var map = <String, dynamic>{};
+    map["id"] = id;
+    map["timestamp"] = timestamp;
+    map["timezone"] = timezone;
+    map["datetime"] = datetime;
+    map["device"] = json.encode(device);
+    map["build"] = build;
+    map["no_address"] = noAddress;
+    map["gps"] = json.encode(gps);
+    map["network"] = json.encode(network);
+    map["locator"] = json.encode(address);
+    map["battery"] = json.encode(battery);
+    map["activity"] = json.encode(activity);
+    map["gyroscope"] = json.encode(gyroscope);
+    map["accelerometer"] = json.encode(accelerometer);
+    map["proximity_changing"] = proximityChanging;
+    map["barometer"] = json.encode(barometer);
+    map["synced_at"] = syncedAt;
+    map["weather"] = json.encode(weather);
+    map["health"] = json.encode(health);
     return Map.fromEntries(map.entries.where((e) => e.value != null));
   }
 
