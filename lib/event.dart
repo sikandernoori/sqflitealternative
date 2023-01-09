@@ -1,29 +1,29 @@
 class Event {
-  int id;
-  final double timestamp;
-  final DateTime date;
+  late int id;
+  late double timestamp;
+  late DateTime date;
 
-  final String timezone;
-  final String datetime;
-  final dynamic device;
-  final dynamic build;
-  final dynamic address;
-  final int noAddress;
+  late String timezone;
+  late String datetime;
+  late dynamic device;
+  late dynamic build;
+  late dynamic address;
+  late int noAddress;
 
-  final dynamic battery;
-  final dynamic activity;
-  final dynamic gps;
-  final dynamic network;
+  late dynamic battery;
+  late dynamic activity;
+  late dynamic gps;
+  late dynamic network;
 
   // Gyro & Accelerometer props
-  final dynamic gyroscope;
-  final dynamic accelerometer;
+  late dynamic gyroscope;
+  late dynamic accelerometer;
 
-  final int proximityChanging;
-  final dynamic barometer;
-  final int syncedAt;
-  final dynamic weather;
-  final dynamic health;
+  late int proximityChanging;
+  late dynamic barometer;
+  late int syncedAt;
+  late dynamic weather;
+  late dynamic health;
 
   Event(
     this.id,
@@ -70,5 +70,28 @@ class Event {
     map["weather"] = weather;
     map["health"] = health;
     return Map.fromEntries(map.entries.where((e) => e.value != null));
+  }
+
+  Event.map(Map _params) {
+    var map = Map.from(_params);
+    id = map["id"];
+    timestamp = map["timestamp"];
+    timezone = map["timezone"];
+    datetime = map["datetime"];
+    device = map["device"];
+    build = map["build"];
+    noAddress = map["no_address"];
+    gps = map["gps"];
+    network = map["network"];
+    address = map["locator"];
+    battery = map["battery"];
+    activity = map["activity"];
+    gyroscope = map["gyroscope"];
+    accelerometer = map["accelerometer"];
+    proximityChanging = map["proximity_changing"];
+    barometer = map["barometer"];
+    syncedAt = map["synced_at"];
+    weather = map["weather"];
+    health = map["health"];
   }
 }

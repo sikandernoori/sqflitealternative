@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,6 +39,19 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime? startTime;
   DateTime? endTime;
   String operation = '';
+  late Directory directory;
+  List<Event> events = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getDocumentDirectory();
+  }
+
+  void getDocumentDirectory() async {
+    directory = await getApplicationDocumentsDirectory();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,58 +101,59 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void saveToFlatFiles([int records = 100000]) async {
-    setState(() {
-      operation = 'writing';
-      startTime = DateTime.now();
-      _counter = 0;
-      endTime = null;
-    });
-    print('Write start time: $startTime');
+    try {
+      setState(() {
+        operation = 'writing';
+        startTime = DateTime.now();
+        _counter = 0;
+        endTime = null;
+      });
+      print('Write start time: $startTime');
 
-    Event event = getEventObject();
-    final directory = await getApplicationDocumentsDirectory();
-    String toLog = '';
-    for (int i = 0; i < records; i++) {
-      event.id = i;
-      toLog = "$toLog,${event.toMap()}";
-      File logFile = File("${directory.path}/ $i.txt");
-      await logFile.writeAsString(toLog, mode: FileMode.write);
-      // setState(() {
-      _counter++;
-      // });
+      Event event = getEventObject();
+      File logFile = File("${directory.path}/oneFile.txt");
+      for (int i = 0; i < records; i++) {
+        event.id = i;
+        var toLog = json.encode(event.toMap());
+        await logFile.writeAsString('$toLog\n', mode: FileMode.append);
+        _counter++;
+      }
+      setState(() {
+        endTime = DateTime.now();
+      });
+      print('Write end time: $endTime');
+    } catch (e) {
+      showMessage(context, e.toString());
     }
-    setState(() {
-      endTime = DateTime.now();
-    });
-    print('Write end time: $endTime');
   }
 
   void readFromFlatFiles() async {
-    setState(() {
-      operation = 'reading';
-      startTime = DateTime.now();
-      endTime = null;
-      _counter = 0;
-    });
-    print('Read start time: $startTime');
+    try {
+      setState(() {
+        operation = 'reading';
+        startTime = DateTime.now();
+        endTime = null;
+        _counter = 0;
+      });
+      print('Read start time: $startTime');
 
-    final directory = await getApplicationDocumentsDirectory();
+      File dataFile = File("${directory.path}/oneFile.txt");
 
-    file = Directory(directory.path).listSync();
+      var content = await dataFile.readAsLines();
 
-    for (File e in file) {
-      // setState(() {
-      _counter++;
-      // });
-      final File file = File(e.path);
-      var text = await file.readAsString();
-      // print(text);
+      content.forEach((element) {
+        events.add(Event.map(json.decode(element)));
+      });
+
+      _counter = events.length;
+
+      setState(() {
+        endTime = DateTime.now();
+      });
+      print('Read end time: $endTime');
+    } catch (e) {
+      showMessage(context, e.toString());
     }
-
-    setState(() {
-      endTime = DateTime.now();
-    });
-    print('Read end time: $endTime');
   }
 
   Event getEventObject() {
@@ -166,5 +181,11 @@ class _MyHomePageState extends State<MyHomePage> {
         {"heart beat": "120/80", "steps": 1000},
         DateTime.now().millisecondsSinceEpoch.toDouble(),
         DateTime.now());
+  }
+
+  showMessage(BuildContext context, String message) {
+    print(message);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
